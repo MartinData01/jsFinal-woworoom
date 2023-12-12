@@ -17,7 +17,7 @@ function getProductList(){
     renderProductList();
   }).catch(function(err){
     sweetalert2("取得商品列表失敗");
-    console.log(err);
+    // console.log(err);
   })
 }
 // 渲染畫面 - 產品列表
@@ -48,7 +48,7 @@ function getShopCartList(){
     renderShoppingCart();
   }).catch(function(err){
     sweetalert2("取得購物車失敗");
-    console.log(err);
+    // console.log(err);
   });
 };
 // 渲染畫面 - 購物車列表
@@ -56,6 +56,9 @@ const shoppingCartTable = document.querySelector(".shoppingCart-tbody");
 const totalCart = document.querySelector(".total");
 function renderShoppingCart(){
   let str = "";
+  if(shoppingCartList.length==0){
+    str=`<tr><td>購物車沒有商品！</td></tr>`;
+  }
   shoppingCartList.forEach(function(item){
     str+= `<tr>
     <td>
@@ -100,7 +103,7 @@ function addCartItem(id){
     renderShoppingCart();
   }).catch(function(err){
     sweetalert2("加入購物車失敗");
-    console.log(err);
+    // console.log(err);
   });
 }
 
@@ -119,7 +122,7 @@ function deleteAllCart(){
     sweetalert2("購物車已清空！")
   }).catch(function(err){
     sweetalert2("刪除全部購物車失敗");
-    console.log(err);
+    // console.log(err);
   });
 }
 
@@ -143,7 +146,7 @@ function delCartItem(id){
     sweetalert2("商品刪除成功！");
   }).catch(function(err){
     sweetalert2("刪除單項商品失敗");
-    console.log(err);
+    // console.log(err);
   });
 }
 
@@ -157,6 +160,14 @@ const orderInfoBtn = document.querySelector(".orderInfo-btn");
 
 orderInfoBtn.addEventListener("click",function(e){
   e.preventDefault("click");
+  if(shoppingCartList.length==0){
+    sweetalert2("購物車沒有商品！");
+    return;
+  }
+  if(customerName.value==""||customerPhone.value==""||customerEmail.value==""||customerAddress.value==""){
+    sweetalert2("請填入資料！");
+    return;
+  }
   let obj = {};
   obj.name = customerName.value;
   obj.tel = customerPhone.value;
@@ -173,11 +184,11 @@ function postCustomerOrder(obj){
     }
   }).then(function(res){
     sweetalert2("訂單送出成功！");
-    console.log(res.data);
+    // console.log(res.data);
     getShopCartList();
   }).catch(function(err){
     sweetalert2("訂單送出失敗");
-    console.log(err);
+    // console.log(err);
   });
 }
 

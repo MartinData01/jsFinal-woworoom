@@ -37,10 +37,11 @@ function getOrderList(){
     renderOrderList();
   }).catch(function(err){
     sweetalert2("取得訂單狀態失敗！");
-    // console.log(err);
+    console.log(err);
   });
 }
 
+// 渲染畫面 - 訂單資料 將資料存入圖表用function
 let c3orderData = [];
 function renderOrderList(){
   let str = "";
@@ -73,7 +74,8 @@ function renderOrderList(){
   </tr>`
   });
   orderList.innerHTML = str;
-  console.log(c3orderData);
+  console.log("origin",c3orderData);
+  c3DataTransform();
 }
 
 // PUT 修改訂單狀態
@@ -152,6 +154,21 @@ function delAllOrder(){
     sweetalert2("訂單全部清空錯誤！ERRoR");
     // console.log(err);
   });
+}
+
+
+// c3 圖表用
+function c3DataTransform(){
+  let second = [];
+  let third;
+  c3orderData.forEach(function(item){
+    item.forEach(function(item2){
+      second.push(item2);
+    })
+  });
+
+  console.log("2",second);
+
 }
 
 
