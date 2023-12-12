@@ -26,23 +26,32 @@ c3.generate({
 
 
 
-//GET 後台取得訂單
+// GET 後台取得訂單
 const orderList = document.querySelector(".order-list");
 let orderData;
 function getOrderList(){
   axios.get(`${baseUrl}/${api_path}/orders`,config).then(function(res){
-    console.log(res.data);
+    // console.log(res.data);
+    // sweetalert2("取得訂單狀態成功！");
     orderData = res.data.orders;
     renderOrderList();
   }).catch(function(err){
-    console.log(err);
+    sweetalert2("取得訂單狀態失敗！");
+    // console.log(err);
   });
 }
 
+let c3orderData = [];
 function renderOrderList(){
   let str = "";
-  let orderStatus = "";
   orderData.forEach(item => {
+    let orderStatus;
+    c3orderData.push(item.products);
+    if(item.paid===true){
+      orderStatus = "已處理";
+    }else if(item.paid===false){
+      orderStatus = "未處理";
+    };
     str+=`<tr>
     <td>${item.id}</td>
     <td>
@@ -56,7 +65,7 @@ function renderOrderList(){
     </td>
     <td>2021/03/08</td>
     <td class="orderStatus">
-      <a href="#" data-id="${item.id}">未處理</a>
+      <a href="#" data-id="${item.id}">${orderStatus}</a>
     </td>
     <td>
       <input type="button" class="delSingleOrder-Btn" value="刪除" data-id="${item.id}">
@@ -64,40 +73,72 @@ function renderOrderList(){
   </tr>`
   });
   orderList.innerHTML = str;
+  console.log(c3orderData);
 }
 
 // PUT 修改訂單狀態
 orderList.addEventListener("click",function(e){
   let orderId = e.target.dataset.id;
-  if(orderId === undefined){
+  let selected = e.target.getAttribute("href");
+  let orderStatus;
+  if(selected !== "#"){
     return;
   }
   e.preventDefault("click");
-  putOrderList(orderId);
+  sweetalert2("訂單狀態修改中...");
+  // console.log(e.target.textContent);
+  if(e.target.textContent==="已處理"){
+    orderStatus = false;
+  }else if(e.target.textContent==="未處理"){
+    orderStatus = true;
+  }
+  putOrderList(orderId,orderStatus);
 });
 
-function putOrderList(id){
+function putOrderList(id,status){
   axios.put(`${baseUrl}/${api_path}/orders`,{
     "data": {
       "id": id,
-      "paid": true
+      "paid": status
     }
   },config).then(function(res){
-    console.log(res);
+    sweetalert2("訂單狀態修改成功！");
     orderData = res.data.orders;
     renderOrderList();
   }).catch(function(err){
-    console.log(err);
+    sweetalert2("訂單狀態修改失敗！");
+    // console.log(err);
   });
 }
 
 // DELETE 刪除單一訂單
+orderList.addEventListener("click",function(e){
+  // console.log(e.target.value);
+  let selectedItem = e.target.value;
+  if(selectedItem!=="刪除"){
+    return;
+  };
+  sweetalert2("訂單刪除中...");
+  let orderId = e.target.dataset.id;
+  delSelectItem(orderId);
+});
 
+function delSelectItem(id){
+  axios.delete(`${baseUrl}/${api_path}/orders/${id}`,config).then(function(res){
+    sweetalert2("訂單刪除成功！");
+    orderData = res.data.orders;
+    renderOrderList();
+  }).catch(function(err){
+    sweetalert2("訂單刪除失敗！");
+    // console.log(err);
+  });
+}
 
 //DELETE 清除全部訂單
 const discardAllBtn = document.querySelector(".discardAllBtn");
 discardAllBtn.addEventListener("click",function(e){
   e.preventDefault("click");
+  sweetalert2("訂單全部清空中...");
   // console.log(e.target);
   delAllOrder();
 });
@@ -105,10 +146,11 @@ discardAllBtn.addEventListener("click",function(e){
 function delAllOrder(){
   axios.delete(`${baseUrl}/${api_path}/orders`,config).then(function(res){
     sweetalert2("訂單已全部清空！");
-    console.log(res.data.message);
+    orderData = res.data.orders;
+    renderOrderList();
   }).catch(function(err){
     sweetalert2("訂單全部清空錯誤！ERRoR");
-    console.log(err);
+    // console.log(err);
   });
 }
 
