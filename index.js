@@ -42,7 +42,7 @@ let shoppingCartList;
 function getShopCartList(){
   axios.get(`${baseUrl}/${api_path}/carts`).then(function(res){
     shoppingCartList = res.data.carts;
-    totalCart.textContent = res.data.finalTotal;
+    totalCart.textContent = `${res.data.finalTotal} 元`;
     renderShoppingCart();
   }).catch(function(err){
     sweetalert2("取得購物車失敗");
@@ -97,7 +97,7 @@ function addCartItem(id){
     }
   }).then(function(res){
     shoppingCartList = res.data.carts;
-    totalCart.textContent = res.data.finalTotal;
+    totalCart.textContent = `${res.data.finalTotal} 元`;
     renderShoppingCart();
   }).catch(function(err){
     sweetalert2("加入購物車失敗");
@@ -114,13 +114,14 @@ deleteAllCartBtn.addEventListener("click",function(e){
     sweetalert2("購物車沒有商品！");
     return;
   }
+  sweetalert2("購物車清空中...")
   deleteAllCart();
 });
 
 function deleteAllCart(){
   axios.delete(`${baseUrl}/${api_path}/carts`).then(function(res){
     shoppingCartList = res.data.carts;
-    totalCart.textContent = res.data.finalTotal;
+    totalCart.textContent = `${res.data.finalTotal} 元`;
     renderShoppingCart();
     sweetalert2("購物車已清空！")
   }).catch(function(err){
@@ -144,7 +145,7 @@ shoppingCartTable.addEventListener("click",function(e){
 function delCartItem(id){
   axios.delete(`${baseUrl}/${api_path}/carts/${id}`).then(function(res){
     shoppingCartList = res.data.carts;
-    totalCart.textContent = res.data.finalTotal;
+    totalCart.textContent = `${res.data.finalTotal} 元`;
     renderShoppingCart();
     sweetalert2("商品刪除成功！");
   }).catch(function(err){
@@ -160,6 +161,8 @@ const customerEmail = document.querySelector("#customerEmail");
 const customerAddress = document.querySelector("#customerAddress");
 const tradeWay = document.querySelector("#tradeWay");
 const orderInfoBtn = document.querySelector(".orderInfo-btn");
+const formBlock = document.querySelector(".orderInfo-form");
+// console.log(formBlock);
 
 orderInfoBtn.addEventListener("click",function(e){
   e.preventDefault("click");
@@ -187,6 +190,7 @@ function postCustomerOrder(obj){
     }
   }).then(function(res){
     sweetalert2("訂單送出成功！");
+    formBlock.reset();
     // console.log(res.data);
     getShopCartList();
   }).catch(function(err){

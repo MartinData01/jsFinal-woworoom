@@ -25,17 +25,15 @@ function renderC3(){
       }
     }
   });
+  newData = [];
 }
-
-
-
 
 // GET 後台取得訂單
 const orderList = document.querySelector(".order-list");
 let orderData;
 function getOrderList(){
   axios.get(`${baseUrl}/${api_path}/orders`,config).then(function(res){
-    // console.log(res.data);
+    // console.log(res.data.orders);
     // sweetalert2("取得訂單狀態成功！");
     orderData = res.data.orders;
     renderOrderList();
@@ -48,15 +46,36 @@ function getOrderList(){
 // 渲染畫面 - 訂單資料 將資料存入圖表用function
 let c3orderData = [];
 function renderOrderList(){
+  if(orderData.length===0){
+    const chart = document.querySelector("#chart");
+    chart.textContent = "目前沒有訂單資料！！";
+    return;
+  }
   let str = "";
   orderData.forEach(item => {
     let orderStatus;
+    let newTime;
     c3orderData.push(item.products);
     if(item.paid===true){
       orderStatus = "已處理";
     }else if(item.paid===false){
       orderStatus = "未處理";
     };
+    calcOrderDay(item.createdAt);
+    function calcOrderDay (sec) {
+      // 將秒數轉成毫秒
+      const thousandSec = sec * 1000;
+      // 使用 new Date 建立日期物件，建立後就可以使用物件的方法取得特定的值
+      const date = new Date(thousandSec);
+     
+      // 取得年月日，月是從 0 開始計算，所以要 +1 才會是正確的月份
+      const yearStr = date.getFullYear();
+      const monthStr = date.getMonth() + 1;
+      const dateStr = date.getDate();
+     
+      const str = `${yearStr}/${monthStr}/${dateStr}`;
+      newTime = str;
+     };
     str+=`<tr>
     <td>${item.id}</td>
     <td>
@@ -68,7 +87,7 @@ function renderOrderList(){
     <td>
       <p>${item.products[0].title}</p>
     </td>
-    <td>2021/03/08</td>
+    <td>${newTime}</td>
     <td class="orderStatus">
       <a href="#" data-id="${item.id}">${orderStatus}</a>
     </td>
@@ -168,7 +187,6 @@ function delAllOrder(){
 // c3 圖表用
 let newData = [];
 function c3DataTransform(){
-  newData = [];
   let second = [];
   c3orderData.forEach(function(item){
     item.forEach(function(item2){
