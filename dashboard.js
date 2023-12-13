@@ -11,18 +11,22 @@ const config = {
   }
 };
 
-// 請同學自行組出資料，不可直接寫死資料
-c3.generate({
-  bindto: '#chart',
-  data: {
-    columns: [
-        ['床架', 45],
-        ['收納', 35],
-        ['窗簾', 20],
-    ],
-    type : 'pie',
-  }
-});
+// c3 圖表渲染
+function renderC3(){
+  c3.generate({
+    bindto: '#chart',
+    data: {
+      columns: newData,
+      type : 'pie',
+      colors:{
+        "床架":"#DACBFF",
+        "收納":"#9D7FEA",
+        "窗簾": "#5434A7",
+      }
+    }
+  });
+}
+
 
 
 
@@ -74,7 +78,7 @@ function renderOrderList(){
   </tr>`
   });
   orderList.innerHTML = str;
-  console.log("origin",c3orderData);
+  // console.log("origin",c3orderData);
   c3DataTransform();
 }
 
@@ -140,6 +144,10 @@ function delSelectItem(id){
 const discardAllBtn = document.querySelector(".discardAllBtn");
 discardAllBtn.addEventListener("click",function(e){
   e.preventDefault("click");
+  if(orderData.length === 0){
+    sweetalert2("目前沒有訂單");
+    return;
+  }
   sweetalert2("訂單全部清空中...");
   // console.log(e.target);
   delAllOrder();
@@ -158,17 +166,38 @@ function delAllOrder(){
 
 
 // c3 圖表用
+let newData = [];
 function c3DataTransform(){
+  newData = [];
   let second = [];
-  let third;
   c3orderData.forEach(function(item){
     item.forEach(function(item2){
       second.push(item2);
     })
   });
-
-  console.log("2",second);
-
+  // console.log("2",second);
+  // second [{category:"窗簾",price:123},{},{}]
+  let obj = {};
+  second.forEach(function(item){
+    if(obj[item.category]==undefined){
+      obj[item.category] = item.price;
+    }else{
+      obj[item.category] += item.price;
+    }
+  });
+  // console.log("obj",obj);
+  // obj {"窗簾": 1200,"床架": 3780,"收納": 1890}
+  
+  let category = Object.keys(obj);
+  category.forEach(function(item){
+    let ary = [];
+    ary.push(item);
+    ary.push(obj[item]);
+    newData.push(ary);
+  });
+  // console.log("newData",newData);
+  // [["收納",2670],["床架",18780],["窗簾",1200]]
+  renderC3();
 }
 
 

@@ -4,9 +4,7 @@ import { sweetalert2, formattedNumber } from './main.js';
 const api_path = "macshop";
 const baseUrl = "https://livejs-api.hexschool.io/api/livejs/v1/customer";
 
-// .catch(function () {
-//   sweetalert2("取得購物車失敗");
-// })
+
 // NT$${formattedNumber(item.origin_price)}
 
 // 取得商品列表資料
@@ -78,7 +76,7 @@ function renderShoppingCart(){
   </tr>`
   });
   shoppingCartTable.innerHTML = str;
-}
+};
 
 // 加入購物車 post
 productWrap.addEventListener("click",function(e){
@@ -105,12 +103,17 @@ function addCartItem(id){
     sweetalert2("加入購物車失敗");
     // console.log(err);
   });
-}
+};
 
 // 刪除全部購物車 delete
 const deleteAllCartBtn = document.querySelector(".discardAllBtn");
 deleteAllCartBtn.addEventListener("click",function(e){
   e.preventDefault("click");
+  if(shoppingCartList.length==0){
+    deleteAllCartBtn.setAttribute("disabled","disabled");
+    sweetalert2("購物車沒有商品！");
+    return;
+  }
   deleteAllCart();
 });
 
@@ -124,7 +127,7 @@ function deleteAllCart(){
     sweetalert2("刪除全部購物車失敗");
     // console.log(err);
   });
-}
+};
 
 // 刪除購物車單項物品 delete
 shoppingCartTable.addEventListener("click",function(e){
@@ -148,7 +151,7 @@ function delCartItem(id){
     sweetalert2("刪除單項商品失敗");
     // console.log(err);
   });
-}
+};
 
 // 填寫預訂資料表單
 const customerName = document.querySelector("#customerName");
@@ -167,7 +170,7 @@ orderInfoBtn.addEventListener("click",function(e){
   if(customerName.value==""||customerPhone.value==""||customerEmail.value==""||customerAddress.value==""){
     sweetalert2("請填入資料！");
     return;
-  }
+  };
   let obj = {};
   obj.name = customerName.value;
   obj.tel = customerPhone.value;
@@ -190,13 +193,13 @@ function postCustomerOrder(obj){
     sweetalert2("訂單送出失敗");
     // console.log(err);
   });
-}
+};
 
 
 // 初始化
 function init(){
   getProductList();
   getShopCartList();
-}
+};
 
 init();
